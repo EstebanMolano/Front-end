@@ -10,8 +10,33 @@ import './ValiP.css';
 import axios from "axios";
 
 
+const fabricas = [
+  {
+    value: 'fabrica1',
+    name: 'Fabrica1'
+  },
+  {
+    value: 'fabrica2',
+    name: 'Fabrica2'
+  },
+  {
+    value: 'fabrica3',
+    name: 'Fabrica3'
+  },
+];
 
+const empresas = [
+  {
+    value: 'nescafe',
+    name: 'Nescafe'
+  },
+  {
+    value: 'aguilaroja',
+    name: 'Aguilaroja'
+  },
+];
 
+//holis como esta
 
 
 class ValiP extends Component {
@@ -20,10 +45,45 @@ class ValiP extends Component {
   constructor(){
     super();
     this.state = {
-      datos : [],
+      datos : [{"id":"1", "date":"16 Mar, 2019", "cantidad":"2", "estado":"proceso", "validacion":"o si"},
+               {"id":"2", "date":"'16 Mar, 2019", "cantidad":"2", "estado":"proceso", "validacion":"o si"}],
+               valueF: 'uruguay',
+               valueE: 'uruguay',
     }
+
+    this.state.datos.push({"id":"1", "date":"16 Mar, 2019", "cantidad":"3", "estado":"proceso", "validacion":"o si"});
+    this.s = this.s.bind(this);
     
+    this.handleChangeE = this.handleChangeE.bind(this);
+    this.handleChangeF = this.handleChangeF.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
+
+  handleChangeF(event) {
+    console.log(`Seleccionaste ${event.target.value}`);
+    this.setState({valueF: event.target.value});
+ 
+  }
+  handleChangeE(event) {
+    console.log(`Seleccionaste ${event.target.value}`);
+    this.setState({valueE: event.target.value});
+ 
+  }
+
+
+  handleSubmit(event) {
+    alert('Tu país es: ' + this.state.valueF);
+    alert('Tu país es: ' + this.state.valueP);
+    event.preventDefault();
+  }
+
+  meterDatos( datos){
+    axios.post("url", {datos})
+    .then(res => {
+      console.log(res);
+      console.log(res.datos);
+  });
+}
 
   obtenerDatos(){
     axios
@@ -52,23 +112,20 @@ class ValiP extends Component {
       .catch(error => console.log(error));
   }
 
-  meterDatos( datos){
-    axios.post("url", {datos})
-    .then(res => {
-      console.log(res);
-      console.log(res.datos);
+  s(e){
+    console.log(e.target.id);
+    const array = this.state.datos;
+    array.push({"id":"1", "date":"16 Mar, 2019", "cantidad":"3", "estado":"proceso", "validacion":"o si"});
+    this.setState(array);
+    
+    
   }
-    
-  
-
-
-
-    
   
  
     render(){
       
       this.obtenerDatos();
+      this.state.checked=false;
       const rows =  this.state.datos;
    
         return(
@@ -88,20 +145,15 @@ class ValiP extends Component {
 
             <div className="form-group">
             <label>Proveedor</label>
-            <select>
-              <option value="volvo">Fabrica Principal</option>
-              <option value="saab">Fabrica sector 1</option>
-               <option value="mercedes">Fabrica sector 2</option>
-               <option value="audi">Fabrica sector 3</option>
+            <select id="fabrica" value={this.state.valueF} onChange={this.handleChangeF}>
+            {fabricas.map(country => <option key={country.value} value={country.value}>{country.name}</option>)}
 </select> 
             </div>
 
             <div className="form-group">
             <label>Tipo</label>
-            <select>
-  <option value="volvo">Nescafe</option>
-  <option value="saab">Aguila</option>
-  <option value="mercedes">Cafe Rojo</option>
+            <select id="proveedor" value={this.state.valueE} onChange={this.handleChangeE}>
+{empresas.map(country => <option key={country.value} value={country.value}>{country.name}</option>)}
 
 </select> 
 
@@ -109,10 +161,10 @@ class ValiP extends Component {
 
 
 
-
+<div id="principal" hidden={this.state.checked}>
           <React.Fragment>
       <h1>Recent Orders</h1>
-      <Table size="small">
+      <Table size="small" >
         <TableHead>
           <TableRow>
             <TableCell>Date</TableCell>
@@ -123,8 +175,9 @@ class ValiP extends Component {
             <TableCell align="center">Validar para siguiente destino</TableCell>
           </TableRow>
         </TableHead>
+
         <TableBody>
-          {rows.map(row => (
+          {this.state.datos.map(row => (
             <TableRow key={row.id}>
               <TableCell>{row.date}</TableCell>
               <TableCell>{row.cantidad}</TableCell>
@@ -134,7 +187,7 @@ class ValiP extends Component {
                 <button> traz </button>
               </TableCell>
               <TableCell align="center">
-                <button> Validar </button>
+                <button id={row.id} onClick = {this.s.bind(row.id)}> Validar </button>
               </TableCell>
             </TableRow>
           ))}
@@ -146,6 +199,7 @@ class ValiP extends Component {
         </Link>
       </div>
     </React.Fragment>
+    </div>
         </div>
 
 
